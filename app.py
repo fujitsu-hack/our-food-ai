@@ -16,6 +16,8 @@ import json
 import urllib3
 import os
 
+# image
+from PIL import Image 
 
 dirname = os.getcwd()
 model_path = dirname + "/model/model_006_0.1673.h5"
@@ -50,6 +52,20 @@ def get_menu_url(rakuten_info, pred_class):
         if large["categoryName"] == class_name:
             menu_url = large["categoryUrl"]
             return menu_url
+
+
+@app.route("/receiveImage", methods=["POST", "GET"])
+def receive_image():
+    print("\n\nrequest\n\n", request)
+    img = Image.open(request.files['upfile'])
+
+    img.save("./static/sample.jpg")
+    print("\n\ndata: {}\n\n".format(""))
+    return "success"
+
+
+
+
 
 
 @app.route("/")

@@ -1,0 +1,4 @@
+ ›   Warning: heroku update available from 7.42.1 to 7.47.3.
+ ›   Error: Unexpected argument: 2
+ ›   See more help with --help
+ [33m›[39m   Warning: heroku update available from [92m7.42.1[39m to [92m7.47.3[39m.

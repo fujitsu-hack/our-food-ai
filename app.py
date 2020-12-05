@@ -10,10 +10,12 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage
 )
 from model.menu_model import MenuModel
-
-import requests
-import json
+from bs4 import BeautifulSoup
 import urllib3
+import requests
+import pathlib
+import datetime
+import json
 import os
 
 
@@ -52,6 +54,22 @@ def get_menu_url(rakuten_info, pred_class):
             return menu_url
 
 
+def create_message(menu_url, user_disp_name):
+    r = requests.get(menu_url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    elems = soup.find_all("h3", class_="limitTitFloat")
+    tmp_food_list = [e.getText() for e in elems]
+
+    msg = "こんにちは " + user_disp_name + " さん!!\n" + \
+        "今日の御飯の候補として\n"
+    for food in tmp_food_list[0:5]:
+        msg = msg + food + "\n"
+    msg = msg + "はいかがですか？(^^)\n 作り方は" \
+        + menu_url + " を参考にして下さい!!"
+
+    return msg
+
+
 @app.route("/")
 def hello_world():
     return "hello world!"
@@ -75,9 +93,22 @@ def handle_message(event):
     profile = line_bot_api.get_profile(event.source.user_id)
     user_id = event.source.user_id  # ユーザ ID (zzz)
     user_disp_name = profile.display_name  # アカウント名
-    msg = "送り主は" + user_disp_name + "です"
-    line_bot_api.reply_message(
-        event.reply_token, TextSendMessage(text=msg))
+
+    f = pathlib.Path("static/"+user_id+".txt")
+    f.touch()
+    msg = event.message.text
+
+    if(msg[0:6] == "今日のご飯は"):
+        with open("static/"+user_id+".txt", "a") as f:
+            f.write(datetime.datetime.now().strftime(
+                '%Y 年%m 月%d 日')+"\n"+msg[6:]+"\n")
+
+    if(msg[0:6] == "過去のご飯は"):
+        # msg = "かしこまりました!!\n" + user_disp_name + "さんが食べた過去の履歴は "\
+        #     + FQDN+"static/"+user_id + ".txt"+" をご覧下さい!!"
+        msg = requests.get(FQDN+"static/"+user_id + ".txt").text
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text=msg))
 
 
 @handler.add(MessageEvent, message=ImageMessage)
@@ -86,9 +117,7 @@ def handle_image_message(event):
     user_disp_name = profile.display_name  # アカウント名
     message_content = line_bot_api.get_message_content(event.message.id)
 
-    ####### ここを書いてください #######
     rakuten_url = "https://app.rakuten.co.jp/services/api/Recipe/CategoryList/20170426? format=json&categoryType=large&applicationId=1069795497155081416"
-    ##############################
 
     rakuten_res = http.request('GET', rakuten_url)
     rakuten_info = json.loads(rakuten_res.data.decode('utf-8'))
@@ -98,10 +127,10 @@ def handle_image_message(event):
         image_url = "https://our-food-ai.herokuapp.com/static/" + event.message.id + ".jpg"
         pred_class = menu_model.pred_class(image_path=image_url)
         menu_url = get_menu_url(rakuten_info, pred_class)
-        msg = "送り主は" + user_disp_name + "です。\n" + "URL は" + menu_url
+        msg = create_message(menu_url, user_disp_name)
+        messages = (TextSendMessage(text=msg))
+        # ,ImageSendMessage(original_content_url=FQDN + "/static/" + event.message.id + ".jpg", preview_image_url=FQDN + "/static/" + event.message.id + "jpg")
 
-        messages = (TextSendMessage(text=msg),
-                    ImageSendMessage(original_content_url=FQDN + "/static/" + event.message.id + ".jpg", preview_image_url=FQDN + "/static/" + event.message.id + "jpg"))
         line_bot_api.reply_message(event.reply_token, messages)
 
 

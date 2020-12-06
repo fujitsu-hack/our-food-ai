@@ -24,3 +24,11 @@ and LINE bots
 - Save the history of the menu you ate
 - Anyone is OK because it is LINE
 
+
+** Technology
+- LINE Messaging API
+- FLASK
+- Heroku
+- Docker
+- TensorFlow
+- ResNet-50

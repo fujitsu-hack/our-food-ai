@@ -139,10 +139,8 @@ def handle_image_message(event):
     message_content = line_bot_api.get_message_content(event.message.id)
 
     rakuten_url = "https://app.rakuten.co.jp/services/api/Recipe/CategoryList/20170426? format=json&categoryType=large&applicationId=1069795497155081416"
-
     rakuten_res = http.request('GET', rakuten_url)
     rakuten_info = json.loads(rakuten_res.data.decode('utf-8'))
-
     with open("static/" + event.message.id + ".jpg", "wb") as f:
         f.write(message_content.content)
         image_url = "https://our-food-ai.herokuapp.com/static/" + event.message.id + ".jpg"

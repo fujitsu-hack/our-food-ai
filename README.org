@@ -1,9 +1,10 @@
 * Fujitsu Hackathon
 
 ** Background
+- Eating out is becoming less common due to the corona environment
 
-When it comes to making rice for the family every day, the repertoire
-is small and it is difficult. 
+- When it comes to making rice for the family every day, the
+  repertoire is small and it is difficult.
 
 ** Deliverables
 

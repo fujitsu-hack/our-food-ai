@@ -30,7 +30,6 @@ access_token = "i8mVu+Jb36emJ0wI3zT+3HtnRMapNIqRxGucYmsGOnfiUGZ8ea7donXDANqxEMQS
 secret_key = "92a9f9a66c41ca94624822c4ad3df774"
 line_bot_api = LineBotApi(access_token)
 handler = WebhookHandler(secret_key)
-
 FQDN = "https://our-food-ai.herokuapp.com/"
 http = urllib3.PoolManager()
 
@@ -65,7 +64,7 @@ def create_message(menu_url, user_disp_name):
         msg = msg + food + "\n"
     msg = msg + "はいかがですか？(^^)\n 作り方は" \
         + menu_url + " を参考にして下さい!!"
-
+    del tmp_food_list
     return msg
 
 
@@ -82,8 +81,8 @@ def recommend_menu(event):
 
     pred_class = menu_model.pred_class(image_path=image_url)
     menu_url = get_menu_url(rakuten_info, pred_class)
+    del rakuten_info
     msg = create_message(menu_url, user_disp_name)
-
     messages = (ImageSendMessage(original_content_url=FQDN +
                                  "/static/" + file_name, preview_image_url=FQDN + "/static/" + file_name), TextSendMessage(text=msg))
 
@@ -146,6 +145,7 @@ def handle_image_message(event):
         image_url = "https://our-food-ai.herokuapp.com/static/" + event.message.id + ".jpg"
         pred_class = menu_model.pred_class(image_path=image_url)
         menu_url = get_menu_url(rakuten_info, pred_class)
+        del rakuten_info
         msg = create_message(menu_url, user_disp_name)
         messages = (TextSendMessage(text=msg))
         line_bot_api.reply_message(event.reply_token, messages)

@@ -1,0 +1,25 @@
+* Fujitsu Hackathon
+
+** Background
+
+When it comes to making rice for the family every day, the repertoire
+is small and it is difficult. 
+
+** Deliverables
+
+*** AI cooking pad(AI 料理パッド)
+
+We have created a new type of LINE bot that combines machine learning
+and LINE bots
+
+** System features
+- Recommend today's menu
+- Save and display past menus
+  - Menus can be saved and displayed for each individual
+- Menu recommendations from photos of ingredients
+
+** Differences from conventional products
+- Reduce the burden on users to the utmost
+- Save the history of the menu you ate
+- Anyone is OK because it is LINE
+
